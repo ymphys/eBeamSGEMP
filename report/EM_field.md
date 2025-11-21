@@ -1,6 +1,6 @@
-# 匀速运动的单电子产生的电磁场
+## 匀速运动的单电子产生的电磁场
 
-## 静止系
+### 静止系
 
 在该电子的静止系中，其电磁场为
 $$
@@ -12,7 +12,7 @@ $$
 
 如果是一个包含$10^{10}$个电子的束团，且空间分布可忽略，则场强变为14.4V/m；如果探头距离进一步变为10cm，则场强变为1.44kV/m.
 
-## 实验室系
+### 实验室系
 
 如果电子在实验室系下以速度$\vec{v}=v\hat{z}$匀速运动，$t=0$时刻位于$(0,0,0)$位置，且电磁场探针固定在$(d,0,0)$处，则探针能测到的电磁场是随时间变化的
 $$
@@ -25,4 +25,7 @@ B_x=0,\quad B_y=\frac{v}{c^2}E_x,\quad B_z=0.
 $$
 取$d=1.0$m, $E_k=10$MeV, 则电磁场峰值分别为$E_{\max}=29.4$nV/m, $B_{\max}=1.0$pG; 如果是一个包含$10^{10}$个电子的束团，且空间分布可忽略，则峰值变为$E_{\max}=294$V/m, $B_{\max}=1.0\mathrm{\mu}$T; 图像如下：
 
-<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\single_electron\EM_field_pulses_single_electron.png" width=75% >
+<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\EM_field_pulses_single_electron.png" width=75% >
+
+## 匀速运动的单电子束团产生的电磁场
+

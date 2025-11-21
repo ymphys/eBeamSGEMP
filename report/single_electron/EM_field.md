@@ -14,16 +14,15 @@ $$
 
 ## 实验室系
 
-如果电子在实验室系下以速度$\vec{v}=v\hat{z}$匀速运动，则其自生电磁场为
-$$
-E_z=-\frac{ez}{4\pi\epsilon_0(x^2+y^2+z^2)^{3/2}},\quad E_{x}=-\frac{\gamma ex}{4\pi\epsilon_0(x^2+y^2+z^2)^{3/2}},\quad E_{y}=-\frac{\gamma ey}{4\pi\epsilon_0(x^2+y^2+z^2)^{3/2}},\\
-B_z=0,\quad B_x=\frac{\beta\gamma}{c}E_y,\quad B_y=-\frac{\beta\gamma}{c}E_x,
-$$
-以上所采用的坐标系默认电子位于原点，即$(0,0,0)$, 电磁场探针位于$(x,y,z)$. 如果采用固定的坐标系，引入时间假设电子的初始坐标为$(0,0,-z)$, 在$(d,0,0)$处有一电磁场探针，则当电子沿z轴飞过时，探针能测到的电磁场是随时间变化的
-
-如果电子在实验室系下以速度$\vec{v}=v\hat{z}$从$(0,0,-z_0)$开始匀速运动，且电磁场探针固定在$(d,0,0)$处，则当电子沿z轴飞过时，探针能测到的电磁场是随时间变化的
+如果电子在实验室系下以速度$\vec{v}=v\hat{z}$匀速运动，$t=0$时刻位于$(0,0,0)$位置，且电磁场探针固定在$(d,0,0)$处，则探针能测到的电磁场是随时间变化的
 $$
 \vec{E}(t)=-\frac{e}{4\pi\epsilon_0}\frac{1-\beta^2}{(1-\beta^2\sin^2\theta)^{3/2}}\frac{\hat{R}}{R^2},\quad \vec{B}(t)=\frac{1}{c^2}\vec{v}\times\vec{E}(t),
 $$
-其中$\vec{R}=R\hat{R}=(d,0,vt-z_0)$，假设电子的初始坐标为$(0,0,-z)$,
+其中$\vec{R}=R\hat{R}=(d,0,vt)$, $\sin\theta=d/R$,  电磁场写为分量形式为
+$$
+E_x=-\frac{e}{4\pi\epsilon_0}\frac{1-\beta^2}{(1-\beta^2\sin^2\theta)^{3/2}}\frac{d}{R^2},\quad E_y=0,\quad E_z=-\frac{e}{4\pi\epsilon_0}\frac{1-\beta^2}{(1-\beta^2\sin^2\theta)^{3/2}}\frac{vt}{R^2},\\
+B_x=0,\quad B_y=\frac{v}{c^2}E_x,\quad B_z=0.
+$$
+取$d=1.0$m, $E_k=10$MeV, 则电磁场峰值分别为$E_{\max}=29.4$nV/m, $B_{\max}=1.0$pG; 如果是一个包含$10^{10}$个电子的束团，且空间分布可忽略，则峰值变为$E_{\max}=294$V/m, $B_{\max}=1.0\mathrm{\mu}$T; 图像如下：
 
+<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\single_electron\EM_field_pulses_single_electron.png" width=75% >

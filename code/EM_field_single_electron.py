@@ -22,18 +22,11 @@ Where:
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-
-# 设置中文字体和负号显示（如有需要）
-matplotlib.rcParams['font.sans-serif'] = ['Heiti TC', 'STHeiti', 'SimHei', 'Arial Unicode MS']
-matplotlib.rcParams['axes.unicode_minus'] = False  # Use ASCII minus
 
 # =============================================================================
 # CONSTANTS
 # =============================================================================
-# Q_E = 1.6e-19           # Elementary charge (Coulombs)
-Q_E = 1.6e-9
+Q_E = 1.6e-19           # Elementary charge (Coulombs)
 EPSILON_0 = 8.854e-12   # Permittivity of free space (F/m)
 PI = 3.141592653589793  # Pi
 M_E = 9.109e-31         # Electron mass (kg)
@@ -42,15 +35,7 @@ C = 3e8                 # Speed of light (m/s)
 # =============================================================================
 # SIMULATION PARAMETERS
 # =============================================================================
-Ek = 10.0               # Kinetic energy (MeV)
-d = 1.0                 # Perpendicular distance from trajectory (m)
-t_0 = 0              # Initial time reference
-z_0 = abs(t_0) / C           # Initial position reference
 
-# Time window for simulation
-t_start = -1e-8        # seconds
-t_end   =  1e-8        # seconds
-num_points = 1000      # Number of time points
 
 # =============================================================================
 # PHYSICS CALCULATIONS
@@ -122,105 +107,41 @@ def calculate_EM_fields(t, gamma, beta, v, d, t_0, z_0):
     return E_x, E_y, E_z, B_x, B_y, B_z, E_magnitude, B_magnitude
 
 
-# =============================================================================
-# MAIN SIMULATION
-# =============================================================================
 
-def main():
-    """Main simulation and plotting routine."""
-    
-    print("=" * 70)
-    print("EM Field Simulation for Relativistic Charged Particle")
-    print("=" * 70)
-    print(f"\nParameters:")
-    print(f"  Kinetic Energy: {Ek} MeV")
-    print(f"  Perpendicular Distance (d): {d} m")
-    print(f"  Time Window: [{t_start:.2e}, {t_end:.2e}] s")
-    print(f"  Number of Points: {num_points}")
-    
-    # Calculate relativistic parameters
+# =====================
+# Module API function
+# =====================
+def compute_em_fields(
+    t_start: float,
+    t_end: float,
+    num_points: int,
+    Ek: float = 10.0,
+    d: float = 1.0,
+    t_0: float = 0.0,
+    z_0: float = None
+) -> tuple:
+    """
+    Compute the time-dependent EM fields for a single relativistic electron.
+    Args:
+        t_start: Start time (s)
+        t_end: End time (s)
+        num_points: Number of time points
+        Ek: Kinetic energy (MeV)
+        d: Perpendicular distance from trajectory (m)
+        t_0: Reference time (s)
+        z_0: Reference position (m). If None, uses t_0 / C.
+    Returns:
+        t: time array
+        E_x, E_y, E_z: electric field components
+        B_x, B_y, B_z: magnetic field components
+        E_mag: |E| field magnitude
+        B_mag: |B| field magnitude
+    """
+    if z_0 is None:
+        z_0 = t_0 / C
     gamma, beta, v = calculate_relativistic_parameters(Ek)
-    print(f"\nRelativistic Parameters:")
-    print(f"  γ (Lorentz factor): {gamma:.4f}")
-    print(f"  β (v/c): {beta:.6f}")
-    print(f"  v (velocity): {v:.4e} m/s")
-    
-    # Create time array
-    time = np.linspace(t_start, t_end, num_points)
-    
-    # Calculate fields
+    t = np.linspace(t_start, t_end, num_points)
     E_x, E_y, E_z, B_x, B_y, B_z, E_mag, B_mag = calculate_EM_fields(
-        time, gamma, beta, v, d, t_0, z_0
+        t, gamma, beta, v, d, t_0, z_0
     )
-    
-    # Convert time to nanoseconds for better readability
-    time_ns = time * 1e9
-    
-    print(f"\nField Calculations Complete")
-    print(f"  Max |E|: {np.max(E_mag):.4e} V/m")
-    print(f"  Max |B|: {np.max(B_mag):.4e} T")
-    
-    # =============================================================================
-    # PLOTTING
-    # =============================================================================
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-    fig.suptitle('忽略空间分布的电子束团产生的电磁场脉冲', fontsize=16, fontweight='bold')
-    
-    # Plot 1: Electric field magnitude vs time
-    axes[0, 0].plot(time_ns, E_mag, 'b-', linewidth=2, label='|E|')
-    axes[0, 0].set_xlabel('时间 (ns)', fontsize=11)
-    axes[0, 0].set_ylabel('电场幅值 (V/m)', fontsize=11)
-    axes[0, 0].set_title('电场脉冲', fontsize=12, fontweight='bold')
-    axes[0, 0].grid(True, alpha=0.3)
-    axes[0, 0].legend(fontsize=10)
-    
-    # Plot 2: Electric field components
-    axes[0, 1].plot(time_ns, E_x, 'r-', linewidth=1.5, label='E_x', alpha=0.8)
-    axes[0, 1].plot(time_ns, E_z, 'g-', linewidth=1.5, label='E_z', alpha=0.8)
-    axes[0, 1].set_xlabel('时间 (ns)', fontsize=11)
-    axes[0, 1].set_ylabel('电场分量 (V/m)', fontsize=11)
-    axes[0, 1].set_title('电场分量', fontsize=12, fontweight='bold')
-    axes[0, 1].grid(True, alpha=0.3)
-    axes[0, 1].legend(fontsize=10)
-    
-    # Plot 3: Magnetic field magnitude vs time
-    axes[1, 0].plot(time_ns, B_mag, 'purple', linewidth=2, label='|B|')
-    axes[1, 0].set_xlabel('时间 (ns)', fontsize=11)
-    axes[1, 0].set_ylabel('磁场幅值e (T)', fontsize=11)
-    axes[1, 0].set_title('磁场脉冲', fontsize=12, fontweight='bold')
-    axes[1, 0].grid(True, alpha=0.3)
-    axes[1, 0].legend(fontsize=10)
-    
-    # Plot 4: Magnetic field component (B_y)
-    axes[1, 1].plot(time_ns, B_y, 'orange', linewidth=2, label='B_y')
-    axes[1, 1].set_xlabel('时间 (ns)', fontsize=11)
-    axes[1, 1].set_ylabel('磁场分量 (T)', fontsize=11)
-    axes[1, 1].set_title('磁场分量 (B_y)', fontsize=12, fontweight='bold')
-    axes[1, 1].grid(True, alpha=0.3)
-    axes[1, 1].legend(fontsize=10)
-    
-    plt.tight_layout()
-    # plt.show()
-    plt.savefig('EM_field_pulses_single_electron.png', dpi=600)
-    
-    print("\n" + "=" * 70)
-    print("Plot generated successfully!")
-    print("=" * 70)
-
-
-# =============================================================================
-# TROUBLESHOOTING NOTES
-# =============================================================================
-"""
-If the plot window does not appear, confirm that:
-    1. Matplotlib backend is working: try `pip install matplotlib`
-    2. NumPy is installed: `pip install numpy`
-    3. You're running the script directly (not in REPL)
-    4. If using VS Code, ensure Python extension is installed
-
-To run this script:
-    python EM_field.py
-"""
-
-if __name__ == '__main__':
-    main()
+    return t, E_x, E_y, E_z, B_x, B_y, B_z, E_mag, B_mag

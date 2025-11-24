@@ -22,6 +22,7 @@ Where:
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 # =============================================================================
 # CONSTANTS
@@ -145,3 +146,53 @@ def compute_em_fields(
         t, gamma, beta, v, d, t_0, z_0
     )
     return t, E_x, E_y, E_z, B_x, B_y, B_z, E_mag, B_mag
+
+
+def plot_em_fields(t, E_x, E_z, B_y, E_mag, B_mag):
+    """Visualize EM fields using four stacked subplots as requested."""
+    fig, axes = plt.subplots(4, 1, figsize=(8, 12), sharex=True)
+
+    axes[0].plot(t, E_mag, color="tab:purple")
+    axes[0].set_ylabel("|E| (V/m)")
+    axes[0].set_title("Electric Field Magnitude", fontsize=11)
+    axes[0].grid(True, linestyle="--", alpha=0.4)
+
+    axes[1].plot(t, E_x, label="E_x", color="tab:blue")
+    axes[1].plot(t, E_z, label="E_z", color="tab:orange")
+    axes[1].set_ylabel("E components (V/m)")
+    axes[1].set_title("Electric Field Components", fontsize=11)
+    axes[1].grid(True, linestyle="--", alpha=0.4)
+    axes[1].legend(loc="upper right")
+
+    axes[2].plot(t, B_mag, color="tab:green")
+    axes[2].set_ylabel("|B| (T)")
+    axes[2].set_title("Magnetic Field Magnitude", fontsize=11)
+    axes[2].grid(True, linestyle="--", alpha=0.4)
+
+    axes[3].plot(t, B_y, color="tab:red")
+    axes[3].set_ylabel("B_y (T)")
+    axes[3].set_title("Magnetic Field Component", fontsize=11)
+    axes[3].set_xlabel("Time (s)")
+    axes[3].grid(True, linestyle="--", alpha=0.4)
+
+    fig.suptitle("Single-Electron EM Field Evolution", fontsize=14)
+    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    plt.show()
+
+
+def main():
+    """Example usage: compute and plot fields for a default scenario."""
+    t, E_x, _, E_z, _, B_y, _, E_mag, B_mag = compute_em_fields(
+        t_start=-1e-9,
+        t_end=1e-9,
+        num_points=2000,
+        Ek=10.0,
+        d=1.0,
+        t_0=0.0,
+        z_0=0.0,
+    )
+    plot_em_fields(t, E_x, E_z, B_y, E_mag, B_mag)
+
+
+if __name__ == "__main__":
+    main()

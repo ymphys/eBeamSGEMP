@@ -1,51 +1,118 @@
-请根据以下物理模型和参数，编写Python代码进行数值积分，计算具有空间分布的电子束团在固定探测点产生的电磁场随时间的变化：
+````markdown
+# Prompt for Codex: Generate `micropulse.py`
 
-## 物理模型
-电子束团沿z轴以速度v₀匀速运动，束团在共动坐标系中具有均匀线电荷密度分布：
-λ(z') = eN/(2v₀τ₀), 其中 -v₀τ₀ ≤ z' ≤ v₀τ₀
+## Overview
+编写一个 Python 程序 `micropulse.py`，用于计算 **匀速运动的一维均匀电子束团** 在观察点产生的 **时域电磁场脉冲**。程序需要根据给定物理模型对束团内部每个电子位置进行积分，并计算时间区间内的电场与磁场波形。
 
-探测点固定在实验室系的(d, 0, 0)处。
+## Physical Model Summary (for coding)
+1. 束团沿 **z 方向匀速运动**，速度为  
+   \[
+   v_0 = \beta c,\quad E_k=10\text{ MeV}
+   \]
+2. 束团空间分布为 **一维均匀分布**：  
+   \[
+   \lambda(z')=\frac{eN}{2v_0\tau_0},\quad z'\in[-v_0\tau_0, v_0\tau_0]
+   \]
+3. 坐标转换：  
+   \[
+   z' = z - v_0 t
+   \]
+4. 单电子在观察点产生的电磁场：
+   - 观察点设置为  
+     \[
+     \vec R(z') = (d,\,0,\,z' + v_0 t),\quad d=1.0\text{ m}
+     \]
+   - 距离  
+     \[
+     R = \sqrt{d^2+(z'+v_0 t)^2}
+     \]
+   - 视角  
+     \[
+     \theta = d/R
+     \]
+   - 电场  
+     \[
+     \vec E(z',t)= -\frac{\lambda(z')}{4\pi\epsilon_0}\frac{1-\beta^2}{(1-\beta^2\sin^2\theta)^{3/2}}\frac{\hat R}{R^2}
+     \]
+   - 磁场  
+     \[
+     \vec B(z',t)= \frac{1}{c^2} \vec v \times \vec E
+     \]
+5. 束团电磁场为积分：
+   \[
+   \vec{E}_\text{pulse}(t)=\int dz'\,\vec E(z',t),\quad
+   \vec{B}_\text{pulse}(t)=\int dz'\,\vec B(z',t)
+   \]
+6. 需要计算时间区间：
+   \[
+   t\in[-1\times10^8,\;1\times10^8]\text{（单位：秒）}
+   \]
 
-单个电荷元产生的电场为：
-E(z',t) = -λ(z')/(4πε₀) × (1-β²)/(1-β²sin²θ(z'))^(3/2) × R̂(z')/R(z')²
-其中：
-- R(z') = (d, 0, z' + v₀t)
-- R(z') = |R(z')| = √(d² + (z' + v₀t)²)
-- sinθ(z') = d/R(z')
-- β = v₀/c
+## Coding Requirements
+1. **程序结构**
+   - 生成 `micropulse.py`
+   - 主程序应执行以下步骤：
+     - 定义全部常数
+     - 计算 relativistic β
+     - 生成 z′ 网格
+     - 对每个 t 计算 E、B 的积分
+     - 存储 E(t)、B(t)
+     - 绘制波形图
 
-磁场由 B(z',t) = (1/c²) × (v₀ẑ) × E(z',t) 得到。
+2. **数值方法**
+   - z′ 使用 **均匀网格**，点数可设置为 2000–5000，可通过变量配置。
+   - t 网格可设为 3000–5000 个点。
+   - 使用 `numpy` 和 `scipy` 进行积分与向量运算。
+   - 所有结果使用 SI 单位。
 
-总电磁场通过对z'积分得到：
-E_pulse(t) = ∫E(z',t)dz', B_pulse(t) = ∫B(z',t)dz'
-积分区间：z'从 -v₀τ₀ 到 v₀τ₀
+3. **可视化**
+   - 使用 `matplotlib`
+   - 绘制：
+     - Ex(t)
+     - Ez(t)
+     - |E|(t)
+     - 以及对应磁场分量
 
-## 参数值
-d = 1.0 m
-E_k = 10 MeV (电子动能)
-N = 1e10 (电子数)
-τ₀ = 1e-10 s (束团脉宽)
+4. **代码质量要求**
+   - 写明注释和公式来源
+   - 清晰的函数结构，例如：
+     - `compute_single_E(zp, t)`
+     - `compute_pulse_E(t)`
+     - `main()`
+   - 保证程序可以直接执行并生成图像文件
 
-常数：
-e = 1.602e-19 C (电子电荷)
-ε₀ = 8.854e-12 F/m
-c = 3e8 m/s
-m_e = 9.109e-31 kg (电子质量)
+5. **输出**
+   - 当运行 `python micropulse.py` 时，应输出：
+     - 电场波形图 `E_pulse.png`
+     - 磁场波形图 `B_pulse.png`
+     - 控制台打印关键参数（β、γ、峰值场强等）
 
-## 计算步骤
-1. 计算相对论参数：
-   γ = 1 + E_k/(m_ec²)  [注意：m_ec² = 0.511 MeV]
-   β = √(1 - 1/γ²)
-   v₀ = βc
+## Program Skeleton (Codex Should Flesh Out)
+Codex 应使用以下框架生成完整代码：
 
-2. 定义λ(z') = eN/(2v₀τ₀)
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.constants import c, epsilon_0, elementary_charge as e
 
-3. 数值积分：
-   对每个时间点t，在z'∈[-v₀τ₀, v₀τ₀]区间积分计算E_pulse(t)和B_pulse(t)
+# define constants ...
+# lambda ...
+# compute single-particle field ...
+# integrate over z' ...
+# loop over t ...
+# plot ...
+````
 
-4. 输出要求：
-   - 计算时间范围：t从 -2τ₀ 到 2τ₀，取足够多的时间点
-   - 绘制E_x(t), E_z(t), B_y(t)随时间变化的曲线
-   - 标注峰值场强值
+## Final Deliverables
 
-请使用scipy.integrate.quad进行积分，注意处理被积函数的向量形式。
+Codex 必须输出一个可直接运行的单文件 Python 程序 `micropulse.py`，实现：
+
+* 计算均匀电子束团在观察点随时间的电磁场
+* 完成对 z′ 的数值积分
+* 生成电磁脉冲波形图
+* 代码结构清晰、带注释、可复现
+
+确保输出中不包含其他文件，所有内容均写入 `micropulse.py`。
+
+```markdown
+```

@@ -24,10 +24,15 @@ Where:
 import numpy as np
 import matplotlib.pyplot as plt
 
+import matplotlib
+# 设置中文字体和负号显示（如有需要）
+matplotlib.rcParams['font.sans-serif'] = ['Heiti TC', 'STHeiti', 'SimHei', 'Arial Unicode MS']
+matplotlib.rcParams['axes.unicode_minus'] = False  # Use ASCII minus
+
 # =============================================================================
 # CONSTANTS
 # =============================================================================
-Q_E = 1.6e-19           # Elementary charge (Coulombs)
+Q_E = 1e10 * 1.6e-19           # Elementary charge (Coulombs)
 EPSILON_0 = 8.854e-12   # Permittivity of free space (F/m)
 PI = 3.141592653589793  # Pi
 M_E = 9.109e-31         # Electron mass (kg)
@@ -148,36 +153,38 @@ def compute_em_fields(
     return t, E_x, E_y, E_z, B_x, B_y, B_z, E_mag, B_mag
 
 
-def plot_em_fields(t, E_x, E_z, B_y, E_mag, B_mag):
+def plot_em_fields(t, E_x, E_z , B_y, E_mag, B_mag):
     """Visualize EM fields using four stacked subplots as requested."""
-    fig, axes = plt.subplots(4, 1, figsize=(8, 12), sharex=True)
+    fig, axes = plt.subplots(2,2, figsize=(12, 8), sharex=True)
+    ax_flat = axes.flatten()
 
-    axes[0].plot(t, E_mag, color="tab:purple")
-    axes[0].set_ylabel("|E| (V/m)")
-    axes[0].set_title("Electric Field Magnitude", fontsize=11)
-    axes[0].grid(True, linestyle="--", alpha=0.4)
+    ax_flat[0].plot(t, E_mag, color="tab:purple")
+    ax_flat[0].set_ylabel("电场幅值 (V/m)")
+    ax_flat[0].set_title("电场脉冲", fontsize=11)
+    ax_flat[0].grid(True, linestyle="--", alpha=0.4)
 
-    axes[1].plot(t, E_x, label="E_x", color="tab:blue")
-    axes[1].plot(t, E_z, label="E_z", color="tab:orange")
-    axes[1].set_ylabel("E components (V/m)")
-    axes[1].set_title("Electric Field Components", fontsize=11)
-    axes[1].grid(True, linestyle="--", alpha=0.4)
-    axes[1].legend(loc="upper right")
+    ax_flat[1].plot(t, E_x, label="E_x", color="tab:blue")
+    ax_flat[1].plot(t, E_z, label="E_z", color="tab:orange")
+    ax_flat[1].set_ylabel("电场分量 (V/m)")
+    ax_flat[1].set_title("电场分量", fontsize=11)
+    ax_flat[1].grid(True, linestyle="--", alpha=0.4)
+    ax_flat[1].legend(loc="upper right")
 
-    axes[2].plot(t, B_mag, color="tab:green")
-    axes[2].set_ylabel("|B| (T)")
-    axes[2].set_title("Magnetic Field Magnitude", fontsize=11)
-    axes[2].grid(True, linestyle="--", alpha=0.4)
+    ax_flat[2].plot(t, B_mag, color="tab:green")
+    ax_flat[2].set_ylabel("磁场幅值 (T)")
+    ax_flat[2].set_title("磁场幅值", fontsize=11)
+    ax_flat[2].grid(True, linestyle="--", alpha=0.4)
 
-    axes[3].plot(t, B_y, color="tab:red")
-    axes[3].set_ylabel("B_y (T)")
-    axes[3].set_title("Magnetic Field Component", fontsize=11)
-    axes[3].set_xlabel("Time (s)")
-    axes[3].grid(True, linestyle="--", alpha=0.4)
+    ax_flat[3].plot(t, B_y, color="tab:red")
+    ax_flat[3].set_ylabel("磁场分量 (T)")
+    ax_flat[3].set_title("磁场分量", fontsize=11)
+    ax_flat[3].set_xlabel("时间 (s)")
+    ax_flat[3].grid(True, linestyle="--", alpha=0.4)
 
-    fig.suptitle("Single-Electron EM Field Evolution", fontsize=14)
+    fig.suptitle("忽略空间分布的电子产生的电磁脉冲", fontsize=14)
     fig.tight_layout(rect=[0, 0, 1, 0.97])
-    plt.show()
+    # plt.show()
+    plt.savefig("single_electron_em_fields.png", dpi=600)
 
 
 def main():

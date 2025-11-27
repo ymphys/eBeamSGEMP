@@ -39,7 +39,7 @@ matplotlib.rcParams['axes.unicode_minus'] = False  # Use ASCII minus
 D_DEFAULT = 1.0  # m
 E_K_EV_DEFAULT = 10.0e6  # electron kinetic energy in eV
 N_ELECTRONS_DEFAULT = 1.0e10
-TAU0_DEFAULT = 150e-12  # 100 ps
+TAU0_DEFAULT = 100e-12  # 100 ps
 REALISTIC_SPAN_MULTIPLIER = 10.0  # default time window: +/- 5 * tau0
 T_MIN_PROMPT = -1.0e8  # s (extreme span from prompt)
 T_MAX_PROMPT = 1.0e8   # s
@@ -147,6 +147,18 @@ def annotate_peak(ax, times, data, color: str, label: str) -> None:
         color=color,
         fontsize=9,
     )
+
+
+def compute_fwhm(times: np.ndarray, signal: np.ndarray) -> Tuple[float, float]:
+    """Return FWHM duration (seconds) and half-maximum value."""
+    if len(times) < 2 or signal.size == 0:
+        return 0.0, 0.0
+    half_max = 0.5 * np.max(signal)
+    if half_max <= 0:
+        return 0.0, half_max
+    dt = abs(times[1] - times[0])
+    duration = np.sum(signal >= half_max) * dt
+    return duration, half_max
 
 
 # -----------------------------------------------------------------------------
@@ -354,9 +366,13 @@ def main() -> None:
 
     e_peak_idx = int(np.argmax(np.abs(fields["|E|"])))
     b_peak_idx = int(np.argmax(np.abs(fields["|B|"])))
+    e_fwhm, e_half = compute_fwhm(times, fields["|E|"])
+    b_fwhm, b_half = compute_fwhm(times, fields["|B|"])
     print("=== Diagnostics ===")
     print(f"Peak |E| : {fields['|E|'][e_peak_idx]:.4e} V/m at t = {times[e_peak_idx]:.4e} s")
     print(f"Peak |B| : {fields['|B|'][b_peak_idx]:.4e} T at t = {times[b_peak_idx]:.4e} s")
+    print(f"E-field FWHM: {e_fwhm * 1e9:.3f} ns (half max = {e_half:.3e} V/m)")
+    print(f"B-field FWHM: {b_fwhm * 1e9:.3f} ns (half max = {b_half:.3e} T)")
     print(f"Computation time: {elapsed:.2f} s")
     if save_plots:
         print("Saved plots: micropulse_EM_field.png")

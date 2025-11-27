@@ -97,9 +97,9 @@ def calculate_EM_fields(t, gamma, beta, v, d, t_0, z_0):
     const_factor = -Q_E / (4 * PI * EPSILON_0) * (1 - beta**2) / denominator_factor
     
     # Electric field components
-    E_x = const_factor * d / (R**2)
+    E_x = const_factor * d / (R**3)
     E_y = np.zeros_like(t)  # Always zero
-    E_z = const_factor * (v * (t - t_0) - z_0) / (R**2)
+    E_z = const_factor * (v * (t - t_0) - z_0) / (R**3)
     
     # Magnetic field components
     B_x = np.zeros_like(t)  # Always zero
@@ -185,6 +185,17 @@ def plot_em_fields(t, E_x, E_z , B_y, E_mag, B_mag):
     fig.tight_layout(rect=[0, 0, 1, 0.97])
     # plt.show()
     plt.savefig("single_electron_em_fields.png", dpi=600)
+
+    # Compute FWHM pulse widths
+    dt = np.abs(t[1] - t[0]) if len(t) > 1 else 0.0
+
+    e_half_max = 0.5 * np.max(E_mag)
+    b_half_max = 0.5 * np.max(B_mag)
+    e_duration = np.sum(E_mag >= e_half_max) * dt if e_half_max > 0 else 0.0
+    b_duration = np.sum(B_mag >= b_half_max) * dt if b_half_max > 0 else 0.0
+
+    print(f"E-field FWHM: {e_duration * 1e9:.3f} ns (half max = {e_half_max:.3e} V/m)")
+    print(f"B-field FWHM: {b_duration * 1e9:.3f} ns (half max = {b_half_max:.3e} T)")
 
 
 def main():

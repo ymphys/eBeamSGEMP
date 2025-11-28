@@ -125,6 +125,26 @@ $$
 
 <img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\gaussian_micro.png" width=75% >
 
+### 频域视角
+
+对单个微脉冲电子束团产生的电场脉冲信号做频谱分析，以高斯分布为例：
+$$
+\begin{aligned}
+\tilde{E}(\omega)&=\mathcal{F}(E_x(t))
+=-\frac{Ne\gamma}{4\pi\epsilon_0d^2}\frac{1}{\sqrt{\pi}\tau_0}\int_{-\infty}^{\infty} d\tau\ \exp\left(-\frac{\tau^2}{\tau_0^2}\right)\exp(i\omega\tau)\mathcal{F}\left((1+\beta^2\gamma^2t^2/t_0^2)^{-3/2}\right)\\
+&=-\frac{Ne\gamma}{4\pi\epsilon_0d^2}\exp\left(-\frac{\omega^2\tau_0^2}{4}\right)\left(\frac{\sqrt{2}\omega t_0^2}{\sqrt{\pi}\beta^2\gamma^2}K_1\left(\frac{\omega t_0}{\beta\gamma}\right)\right)
+\end{aligned}
+$$
+其中$\mathcal{F}(E_x(t))=\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}E_{x}(t)\exp(-i\omega t)dt$. 在低频极限下，取$\omega=0$可得
+$$
+\tilde{E}(0)=-\frac{Ne}{4\pi\epsilon_0d^2}\sqrt{\frac{2}{\pi}}\frac{d}{v_0},
+$$
+取$d=1.0$m, $E_k=10$MeV, $N=10^{10}$, $\tilde{E}(0)$=-3.8e-8 V s/m.
+
+高频截断则取决于$\tau_0$与$t_0/\beta/\gamma$的相对大小，其中$\tau_0$提供由高斯包络衰减带来的截断$\omega\approx\frac{2}{\tau_0}$, $t_0$提供相对论几何效应带来的截断$\omega\approx\frac{\beta\gamma}{t_0}$, 如取$\tau_0=100$ps, $d=$1m, $E_k$=10MeV, 可得$(\frac{2}{\tau_0},\frac{\beta\gamma}{t_0})/(2\pi)$=(3.2GHz, 1.0GHz)，即截断为1GHz; 如果$\tau_0$=1ns, 截断变为320MHz.
+
+<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\gaussian_micro_freq.png" width=75% >
+
 ## 匀速运动的宏脉冲电子束团产生的电磁场
 
 考虑一束无限长的宏脉冲，其中微脉冲间隔为$T_0$, 每个微脉冲半高全宽为$2\tau_0$，

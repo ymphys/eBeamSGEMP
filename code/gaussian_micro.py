@@ -48,6 +48,9 @@ class SimulationParams:
     Ntau: int = 2001               # tau 积分采样点数
     t_min: float = -1e-9           # 时间范围下限 (s)
     t_max: float = 1e-9            # 时间范围上限 (s)
+    Nf: int = 1000                 # 频率采样点数
+    f_min: float = 1e3             # 频率范围下限 (Hz)
+    f_max: float = 1e10            # 频率范围上限 (Hz)
 
     def __post_init__(self) -> None:
         # 电子静止能为 0.511 MeV
@@ -111,6 +114,24 @@ def compute_fields(t_array: np.ndarray, params: SimulationParams) -> tuple[np.nd
     B_y = params.beta / C_LIGHT * E_x
 
     return E_x, E_z, B_y
+
+
+def compute_frequency_spectrum(freq_array: np.ndarray, params: SimulationParams) -> np.ndarray:
+    """
+    计算频域电场谱 \tilde{E}(ω)，仅针对 ω>0。
+    输入 freq_array 为 Hz，内部转换到 ω=2πf。
+    """
+    freq_array = np.asarray(freq_array, dtype=float)
+    freq_array = np.maximum(freq_array, 1e-9)  # 避免 ω=0 导致 K1 奇异
+    omega = 2.0 * np.pi * freq_array
+
+    prefactor = -params.N * E_CHARGE * params.gamma / (4.0 * np.pi * EPSILON_0 * params.distance**2)
+    gaussian_factor = np.exp(- (omega**2) * (params.tau_0**2) / 4.0)
+    k1_argument = omega * params.t_0 / (params.beta * params.gamma)
+    k1_argument = np.maximum(k1_argument, 1e-12)
+    bessel_term = (np.sqrt(2.0) * omega * (params.t_0**2)) / (np.sqrt(np.pi) * params.beta**2 * params.gamma**2)
+    spectrum = prefactor * gaussian_factor * bessel_term * special.k1(k1_argument)
+    return spectrum
 
 
 def compute_field_metrics(t_array: np.ndarray, E_x: np.ndarray, E_z: np.ndarray) -> dict[str, float]:
@@ -223,6 +244,26 @@ def plot_fields(
     plt.show()
 
 
+def plot_frequency_spectrum(
+    freq_array: np.ndarray,
+    spectrum: np.ndarray,
+    outfile: str = "gaussian_micro_freq.png",
+) -> None:
+    """绘制频域电场谱，横轴为频率 f。"""
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(freq_array, np.abs(spectrum))
+    ax.set_xscale("log")
+    ax.set_xlim(freq_array.min(), freq_array.max())
+    ax.set_title("频域电场谱 |E~(f)|")
+    ax.set_xlabel("频率 f（Hz）")
+    ax.set_ylabel("幅值（V/m）")
+    ax.grid(True, linestyle="--", alpha=0.5)
+    plt.tight_layout()
+    plt.savefig(outfile, dpi=300, bbox_inches="tight")
+    print(f"[信息] 频域图像已保存至 {outfile}")
+    plt.show()
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Gaussian micro-pulse EM field calculator.",
@@ -237,6 +278,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tmin", type=float, default=-1e-9, help="时间范围下限 (s)")
     parser.add_argument("--tmax", type=float, default=1e-9, help="时间范围上限 (s)")
     parser.add_argument("--outfile", type=str, default="gaussian_micro.png", help="输出 PNG 名称")
+    parser.add_argument("--Nf", type=int, default=1000, help="频域采样点数")
+    parser.add_argument("--fmin", type=float, default=1e3, help="频率范围下限 (Hz)")
+    parser.add_argument("--fmax", type=float, default=1e10, help="频率范围上限 (Hz)")
+    parser.add_argument("--outfreq", type=str, default="gaussian_micro_freq.png", help="频域 PNG 名称")
     return parser.parse_args()
 
 
@@ -251,6 +296,9 @@ def main() -> None:
         Ntau=args.Ntau,
         t_min=args.tmin,
         t_max=args.tmax,
+        Nf=args.Nf,
+        f_min=args.fmin,
+        f_max=args.fmax,
     )
 
     print("[信息] 关键参数设定：")
@@ -278,7 +326,19 @@ def main() -> None:
         f"FWHM = {metrics['FWHM']*1e12:.3f} ps"
     )
 
+    freq_min = max(params.f_min, 1e-9)
+    if params.f_max <= freq_min:
+        freq_array = np.array([freq_min])
+    else:
+        freq_array = np.logspace(
+            np.log10(freq_min),
+            np.log10(params.f_max),
+            params.Nf,
+        )
+    spectrum = compute_frequency_spectrum(freq_array, params)
+
     plot_fields(t_array, E_x, E_z, B_y, params, outfile=args.outfile)
+    plot_frequency_spectrum(freq_array, spectrum, outfile=args.outfreq)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
 
 在该电子的静止系中，其电磁场为
 $$
-\vec{E}=-\frac{e}{4\pi\epsilon_0r^2}\hat{r},\quad\vec{B}=0.
+\vec{E}=-\frac{e}{4\pi\epsilon_0}\frac{\hat{r}}{r^2},\quad\vec{B}=0.
 $$
 该电磁场的特点是各向同性，且不随时间变化。
 
@@ -98,39 +98,33 @@ $$
 |E|_{\max}=-\frac{Ne\gamma}{4\pi\epsilon_0d^2}\frac{1}{\sqrt{1+\beta^2\gamma^2r_\tau^2}},\\ 
 \tau_E\approx2\tau_0+2\tau_0\frac{(1+4\beta^2\gamma^2r_\tau^2)}{(1+4\beta^2\gamma^2r_\tau^2)^{3/2}-1}\left(2-\sqrt{\frac{1+4\beta^2\gamma^2r_\tau^2}{1+\beta^2\gamma^2r_\tau^2}}\right)
 $$
-其中$\tau_E$是在$t=\tau_0$附近展开取得的，$r_\tau=\tau_0/t_0$, 取$d=1.0$m, $E_k=10$MeV, $N=10^{10}$, $\tau_0=100$ps, 可得$E_{\max}=252$V/m, FWHM=309ps，与上文结果一致；取短/长束团极限可得
+其中$\tau_E$是在$t=\tau_0$附近展开取得的，$r_\tau=\tau_0/t_0$, 取$d=1.0$m, $E_k=10$MeV, $N=10^{10}$, $\tau_0=100$ps, 可得$E_{\max}=252$V/m, FWHM=309ps，与上文结果一致；
+
+取长/短束团极限得
 $$
 \begin{aligned}
-&|E|_{\max}=-\frac{e}{4\pi\epsilon_0d}\frac{N}{v_0\tau_0},\quad\tau_E=2\tau_0+\frac{3t_0^3}{4\beta^3\gamma^3\tau_0^2},\quad\tau_0\gg t_0,\\
-&|E|_{\max}=-\frac{Ne\gamma}{4\pi\epsilon_0d^2}(1-\frac{\beta^2\gamma^2\tau_0^2}{2t_0^2}),\quad\tau_E=2\tau_0+\frac{t_0^2}{3\beta^2\gamma^2\tau_0},\quad\gamma\tau_0\ll t_0,
+&|E|_{\max}=-\frac{\lambda}{2\pi\epsilon_0d},\quad\tau_E=2\tau_0,\quad\tau_0\gg t_0,\\
+&|E|_{\max}=-\frac{Ne\gamma}{4\pi\epsilon_0d^2},\quad\tau_E=2(2^{2/3}-1)^{1/2}\frac{t_0}{\beta\gamma},\quad\beta\gamma\tau_0\ll t_0,
 \end{aligned}
 $$
 
+分别对应无限长一维均匀分布静电场和电荷量为$Ne$的点粒子的电场。
 
-### 物理解释
+### 高斯分布微脉冲
 
-1. **线性时不变系统视角**：真空可视为一个线性系统，其中：
-   - **输入**：时间域电荷分布 $\lambda(t)$
-   - **冲激响应**：单电子场 $G_E(t)$
-   - **输出**：测量到的总场 $\vec{E}_{\text{pulse}}(t)$
+$$
+eN=v_0\int_{-\infty}^{\infty}\lambda(\tau)d\tau,\quad \lambda(\tau)=\frac{eN}{\sqrt{\pi}v_0\tau_0}\exp\left(-\frac{\tau^2}{\tau_0^2}\right),
+$$
 
-2. **因果性与传播**：卷积自然地编码了来自不同位置电子的场在不同时间到达探测器的效应。
+$$
+E_{\text{pulse}-x}(t)
+=-\frac{Ne\gamma}{4\pi\epsilon_0d^2}\frac{1}{\sqrt{\pi}\tau_0}\int_{-\infty}^{\infty} d\tau\ \exp\left(-\frac{\tau^2}{\tau_0^2}\right)\frac{1}{[1+\beta^2\gamma^2(\tau+t)^2/t_0^2]^{3/2}}
+$$
 
-3. **频域解释**：通过傅里叶变换，我们得到：
-   $$
-   \tilde{E}_{\text{pulse}}(\omega) = \tilde{\lambda}(\omega) \cdot \tilde{G}_E(\omega)
-   $$
-   其中 $\tilde{\lambda}(\omega) = eN \cdot \text{sinc}(\omega\tau_0/2)$ 是矩形脉冲的傅里叶变换。
+由于上述积分没有解析解，且工程上一般取高斯分布束团的$2\sigma$截断，数值求解可得$E_{\max}=244$V/m, FWHM=323ps.
 
-### 此视角的优势
+<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\gaussian_micro.png" width=75% >
 
-1. **计算效率**：可使用FFT方法快速计算卷积
-2. **物理洞察**：将源特性与真空传播物理分离开来
-3. **通用性**：易于推广到任意电荷分布 $\lambda(t)$
-4. **系统分析**：支持使用信号处理工具（滤波、带宽分析等）
+## 匀速运动的宏脉冲电子束团产生的电磁场
 
-### 特殊情况：超相对论极限
-
-当 $\beta \to 1$ 时，单电子场变得高度局域化，卷积近似于电荷分布的微分，这解释了为什么短束团在高频段辐射强烈。
-
-这种卷积框架为束流电动力学提供了一个强大的信号处理视角，自然地连接到加速器物理中使用的阻抗概念和频域分析。
+考虑一束无限长的宏脉冲，其中微脉冲间隔为$T_0$, 每个微脉冲半高全宽为$2\tau_0$，

@@ -54,10 +54,6 @@ $\theta(z')=d/R(z')$, $\vec{R}(z')=R(z')\hat{R}(z')=(d,0,z'+vt)$, 取$d=1.0$m, $
 
 <img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\micropulse_EM_field.png" width=75% >
 
-若取$\tau_0=$150ps, 则$E_{\max}=218$V/m, $B_{\max}=0.7\mathrm{\mu}$T, FWHM=374ps; 图像如下：
-
-<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\micropulse_150ps.png" width=75% >
-
 ### 信号处理视角
 
 在上面的积分中，做变量替换$z'=v_0\tau$可得
@@ -147,4 +143,19 @@ $$
 
 ## 匀速运动的宏脉冲电子束团产生的电磁场
 
-考虑一束无限长的宏脉冲，其中微脉冲间隔为$T_0$, 每个微脉冲半高全宽为$2\tau_0$，
+考虑一束无限长的宏脉冲，其中微脉冲间隔为$T_0$, 每个微脉冲半高全宽为$2\tau_0$，且服从高斯分布。时域上
+$$
+E_x(t)=\sum_{k=-\infty}^{\infty}E_{\text{pulse}-x}(t+kT),
+$$
+频域上
+$$
+\tilde{E}_x(\omega)=\tilde{E}_{\text{pulse}-x}(\omega)\frac{2\pi}{T}\sum_{m=-\infty}^{\infty}\delta(\omega+m\Omega),\quad\Omega=\frac{2\pi}{T}
+$$
+对应单脉冲频谱在离散频点上被采样。
+
+若脉冲个数有限，取$k\in(-k_{\max},k_{\max})$, 
+$$
+E_x(t)=\sum_{k=-k_{\max}}^{k_{\max}}E_{\text{pulse}-x}(t+kT),\\
+\tilde{E}_x(\omega)=\tilde{E}_{\text{pulse}-x}(\omega)\frac{\sin((2k_{\max}+1)\omega T/2)}{\sin(\omega T/2)},
+$$
+取宏脉冲长1us，微脉冲间隔$T$=550ps, $k_{\max}=$900，宏脉冲频域图绘制如下

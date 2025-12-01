@@ -26,7 +26,7 @@ k_max = int(macro_duration / (2*T))
 
 def compute_micro_spectrum(omega, params):
     """
-    计算微脉冲频域电场 E_pulse_x(omega)
+    计算调制微脉冲频域电场 E_modualte_x(omega)
     
     参数:
     omega: 角频率数组
@@ -55,35 +55,41 @@ def compute_micro_spectrum(omega, params):
 
 def compute_macro_spectrum(omega, E_micro, T, k_max):
     """
-    计算宏脉冲频域电场 E_x(omega)
+    Compute the macro-pulse frequency-domain field E_x(omega).
     
-    参数:
-    omega: 角频率数组
-    E_micro: 微脉冲频域电场
-    T: 微脉冲间隔
-    k_max: 最大k值
+    Args:
+    omega: angular frequency array
+    E_micro: micro-pulse spectrum
+    T: micro-pulse spacing
+    k_max: maximum pulse index
     
-    返回:
-    E_macro: 宏脉冲频域电场数组
-    F: 干涉因子数组
+    Returns:
+    E_macro: macro-pulse spectrum
+    F: interference factor array
     """
-    # 计算干涉因子 F(omega)
-    numerator = np.sin((2 * k_max + 1) * omega * T / 2)
-    denominator = np.sin(omega * T / 2)
-    
-    # 处理分母为零的情况
-    F = np.zeros_like(omega)
-    mask = np.abs(denominator) > 1e-12  # 避免除零
-    F[mask] = numerator[mask] / denominator[mask]
-    
-    # 在分母接近零时使用极限值
-    zero_mask = ~mask
-    F[zero_mask] = (2 * k_max + 1) * np.cos((2 * k_max + 1) * omega[zero_mask] * T / 2)
+    def dirichlet_factor(omega_shift):
+        numerator = np.sin((2 * k_max + 1) * omega_shift * T / 2)
+        denominator = np.sin(omega_shift * T / 2)
+
+        factor = np.zeros_like(omega_shift)
+        mask = np.abs(denominator) > 1e-12  # ????
+        factor[mask] = numerator[mask] / denominator[mask]
+
+        zero_mask = ~mask
+        factor[zero_mask] = (2 * k_max + 1) * np.cos((2 * k_max + 1) * omega_shift[zero_mask] * T / 2)
+        return factor
+
+    omega_offset = np.pi / (2 * T)
+    F = (
+        dirichlet_factor(omega) +
+        dirichlet_factor(omega + omega_offset) +
+        dirichlet_factor(omega - omega_offset)
+    )
     
     E_macro = E_micro * F
     return E_macro, F
 
-def plot_spectra(f, E_micro, E_macro, output_file='macro_spectrum.png'):
+def plot_spectra(f, E_micro, E_macro, output_file='modulate_macro_spectrum.png'):
     """
     绘制微脉冲和宏脉冲频谱
     
@@ -150,14 +156,14 @@ if __name__ == "__main__":
     print(f"\n频率范围: {f[0]/1e6:.2f} MHz 到 {f[-1]/1e9:.2f} GHz")
     print(f"频率点数: {Nw}")
     
-    # 3. 计算微脉冲频谱
+    # 3. 计算调制微脉冲频谱
     E_micro = compute_micro_spectrum(omega, params)
-    print("微脉冲频谱计算完成")
+    print("调制微脉冲频谱计算完成")
     
     # 4. 计算宏脉冲频谱
     E_macro, F = compute_macro_spectrum(omega, E_micro, T, k_max)
     print("宏脉冲频谱计算完成")
     
     # 5. 绘图保存
-    plot_spectra(f, E_micro, E_macro, 'spectrum.png')
-    print("图像已保存为 spectrum.png")
+    plot_spectra(f, E_micro, E_macro, 'modulate_spectrum.png')
+    print("图像已保存为 modulate_spectrum.png")

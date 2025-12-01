@@ -1,3 +1,5 @@
+# 电子束团在真空中产生的电磁场理论分析
+
 ## 匀速运动的单电子产生的电磁场
 
 ### 静止系
@@ -158,4 +160,15 @@ $$
 E_x(t)=\sum_{k=-k_{\max}}^{k_{\max}}E_{\text{pulse}-x}(t+kT),\\
 \tilde{E}_x(\omega)=\tilde{E}_{\text{pulse}-x}(\omega)\frac{\sin((2k_{\max}+1)\omega T/2)}{\sin(\omega T/2)},
 $$
-取宏脉冲长1us，微脉冲间隔$T$=550ps, $k_{\max}=$900，宏脉冲频域图绘制如下
+取宏脉冲长1us，微脉冲$\tau_0=100$ps, 间隔$T$=550ps, $k_{\max}=$900，微/宏脉冲频域图绘制如下
+
+<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\spectrum.png" width=75% >
+
+其中宏脉冲频谱的主峰在$f=1.82$GHz处，正好对应$\Omega=2\pi/T=2\pi f$, 次峰在$f=3.64$GHz处，对应倍频。
+
+若宏脉冲内对微脉冲进行调制，如：
+$$
+E_x(t)=\sum_{k=-k_{\max}}^{k_{\max}}\cos^2\left(\frac{\pi k}{4}\right)\ E_{\text{pulse}-x}(t+kT),\\
+\tilde{E}_x(\omega)=\tilde{E}_x(\omega)=\tilde{E}_{\text{pulse}-x}(\omega)\left[\frac{\sin((2k_{\max}+1)\omega T/2)}{\sin(\omega T/2)}+(\omega\to\omega\pm\frac{\pi}{2T})\right],
+$$
+<img src="D:\QY\定向能\粒子束\eBeamSGEMP\report\modulate_spectrum.png" width=75% >
